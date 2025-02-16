@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Heart, Share2, ThumbsUp, Star, Clock, Users, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Post {
   id: string;
@@ -43,6 +44,7 @@ export default function GameDetailPage({ params }: { params: { gameId: string } 
     isMatching: false,
     isMatched: false
   });
+  const router = useRouter();
 
   useEffect(() => {
     // Mock veri
@@ -234,8 +236,8 @@ export default function GameDetailPage({ params }: { params: { gameId: string } 
                 whileTap={{ scale: 0.98 }}
                 className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
                 onClick={() => {
-                  // Sohbet başlatma fonksiyonu
-                  console.log('Sohbet başlatıldı');
+                  // Sohbet sayfasına yönlendir
+                  router.push(`/chat/${matchState.matchedUser?.username}`);
                 }}
               >
                 <MessageSquare className="w-5 h-5" />
