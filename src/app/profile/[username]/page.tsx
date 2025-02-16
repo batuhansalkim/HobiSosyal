@@ -1,126 +1,222 @@
 'use client';
-import React from 'react';
-import Link from 'next/link';
+
+import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Film, Gamepad2, BookOpen, Camera, Music, Code, Users2, MessageSquare, Heart, Share2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function ProfilePage({ params }: { params: { username: string } }) {
-  const mockProfile = {
-    name: params.username,
-    bio: "Merhaba! Ben teknoloji ve sanat tutkunuyum.",
-    hobbies: ["Fotoğrafçılık", "Yüzme", "Kitap Okuma"],
-    movies: ["Inception", "The Matrix", "Interstellar"],
-    series: ["Breaking Bad", "Stranger Things"],
-    games: ["The Witcher 3", "Red Dead Redemption 2"],
-    skills: ["Fotoğraf Düzenleme", "Web Tasarım"]
+  // Mock user data
+  const user = {
+    username: params.username,
+    name: "Ahmet Yılmaz",
+    bio: "Teknoloji meraklısı ve yazılım geliştirici. Sürekli yeni şeyler öğrenmeye çalışıyorum.",
+    avatar: "/placeholder-avatar.jpg",
+    coverImage: "/placeholder-cover.jpg",
+    stats: {
+      followers: 1234,
+      following: 567,
+      posts: 89
+    },
+    interests: [
+      { icon: <Code className="w-4 h-4" />, name: "Yazılım Geliştirme" },
+      { icon: <Gamepad2 className="w-4 h-4" />, name: "Oyun Geliştirme" },
+      { icon: <Music className="w-4 h-4" />, name: "Müzik Prodüksiyon" },
+      { icon: <Camera className="w-4 h-4" />, name: "Fotoğrafçılık" },
+    ],
+    posts: [
+      {
+        id: 1,
+        content: "Yeni bir oyun geliştirme projesine başladım! Unity ile 2D platform oyunu yapıyorum.",
+        likes: 45,
+        comments: 12,
+        image: "/placeholder-post1.jpg"
+      },
+      {
+        id: 2,
+        content: "Bu hafta sonu çektiğim en iyi fotoğraflardan biri. Doğal ışık muhteşemdi!",
+        likes: 89,
+        comments: 23,
+        image: "/placeholder-post2.jpg"
+      }
+    ]
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-8 px-4">
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Profil Başlığı */}
-        <div className="p-6 bg-gradient-to-r from-blue-500 to-blue-600">
-          <div className="flex items-center space-x-6">
-            <div className="w-32 h-32 bg-white rounded-full border-4 border-white shadow-lg"></div>
-            <div className="text-white">
-              <h1 className="text-3xl font-bold">{mockProfile.name}</h1>
-              <p className="mt-2 text-blue-100">{mockProfile.bio}</p>
-            </div>
-            <Link
-              href="/profile/edit"
-              className="ml-auto px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors duration-200 font-medium"
-            >
-              Profili Düzenle
-            </Link>
-          </div>
-        </div>
-
-        {/* Profil İçeriği */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Hobiler */}
-          <div className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Hobiler
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {mockProfile.hobbies.map((hobby, index) => (
-                <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors duration-200">
-                  {hobby}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Filmler */}
-          <div className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-              </svg>
-              Filmler
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {mockProfile.movies.map((movie, index) => (
-                <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm hover:bg-purple-200 transition-colors duration-200">
-                  {movie}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Diziler */}
-          <div className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              Diziler
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {mockProfile.series.map((series, index) => (
-                <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors duration-200">
-                  {series}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Oyunlar */}
-          <div className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-              </svg>
-              Oyunlar
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {mockProfile.games.map((game, index) => (
-                <span key={index} className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm hover:bg-yellow-200 transition-colors duration-200">
-                  {game}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Yetenekler */}
-          <div className="bg-gray-50 rounded-lg p-4 md:col-span-2 hover:shadow-md transition-shadow duration-200">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Yetenekler
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {mockProfile.skills.map((skill, index) => (
-                <span key={index} className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm hover:bg-indigo-200 transition-colors duration-200">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5">
+      {/* Cover Image */}
+      <div className="h-64 w-full relative bg-gradient-to-r from-primary/20 to-secondary/20">
+        <div className="absolute inset-0 bg-background/40 backdrop-blur-sm"></div>
       </div>
+
+      {/* Profile Info */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="container max-w-6xl mx-auto px-4 -mt-20"
+      >
+        <motion.div variants={itemVariants} className="relative z-10">
+          <Card className="p-6">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              {/* Avatar */}
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-4xl font-bold text-primary-foreground">
+                  {user.name.charAt(0)}
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-background"></div>
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1 space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <h1 className="text-2xl font-bold">{user.name}</h1>
+                    <p className="text-muted-foreground">@{user.username}</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button className="rounded-full">
+                      <Users2 className="w-4 h-4 mr-2" />
+                      Takip Et
+                    </Button>
+                    <Button variant="outline" className="rounded-full">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Mesaj
+                    </Button>
+                  </div>
+                </div>
+
+                <p className="text-muted-foreground max-w-2xl">{user.bio}</p>
+
+                {/* Stats */}
+                <div className="flex gap-6">
+                  <div className="text-center">
+                    <div className="text-xl font-semibold">{user.stats.posts}</div>
+                    <div className="text-sm text-muted-foreground">Gönderi</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-semibold">{user.stats.followers}</div>
+                    <div className="text-sm text-muted-foreground">Takipçi</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xl font-semibold">{user.stats.following}</div>
+                    <div className="text-sm text-muted-foreground">Takip</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Interests */}
+        <motion.div variants={itemVariants} className="mt-6">
+          <Card>
+            <CardContent className="p-6">
+              <h2 className="text-lg font-semibold mb-4">İlgi Alanları</h2>
+              <div className="flex flex-wrap gap-3">
+                {user.interests.map((interest, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary"
+                  >
+                    {interest.icon}
+                    <span>{interest.name}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div variants={itemVariants} className="mt-6">
+          <Tabs defaultValue="posts" className="w-full">
+            <TabsList className="w-full justify-start border-b rounded-none h-auto p-0 bg-transparent">
+              <TabsTrigger 
+                value="posts"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-6 py-3"
+              >
+                Gönderiler
+              </TabsTrigger>
+              <TabsTrigger 
+                value="media"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-6 py-3"
+              >
+                Medya
+              </TabsTrigger>
+              <TabsTrigger 
+                value="likes"
+                className="data-[state=active]:bg-transparent data-[state=active]:border-primary data-[state=active]:text-primary border-b-2 border-transparent rounded-none px-6 py-3"
+              >
+                Beğeniler
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="posts" className="mt-6">
+              <div className="space-y-6">
+                {user.posts.map((post) => (
+                  <motion.div
+                    key={post.id}
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.01 }}
+                    className="group"
+                  >
+                    <Card>
+                      <CardContent className="p-6">
+                        <p className="text-foreground/90 mb-4">{post.content}</p>
+                        <div className="flex justify-between items-center">
+                          <div className="flex gap-4">
+                            <button className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                              <Heart className="w-4 h-4" />
+                              <span>{post.likes}</span>
+                            </button>
+                            <button className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+                              <MessageSquare className="w-4 h-4" />
+                              <span>{post.comments}</span>
+                            </button>
+                          </div>
+                          <button className="text-muted-foreground hover:text-primary transition-colors">
+                            <Share2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="media">
+              <div className="grid grid-cols-3 gap-4">
+                {/* Media content will go here */}
+              </div>
+            </TabsContent>
+            <TabsContent value="likes">
+              <div className="space-y-4">
+                {/* Likes content will go here */}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+      </motion.div>
     </div>
   );
-} 
+}
