@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Lock, User } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function LoginPage() {
       (formData.username === 'enes' && formData.password === 'enes123')
     ) {
       localStorage.setItem('currentUser', formData.username);
-      router.push('/search');
+      router.push(`/profile/${formData.username}`);
     } else {
       setError('Kullanıcı adı veya şifre hatalı!');
     }
@@ -112,6 +113,15 @@ export default function LoginPage() {
             </CardFooter>
           </form>
         </Card>
+
+        <div className="mt-6 text-center">
+          <Link 
+            href="/auth/register" 
+            className="text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            Hesabın yok mu? Kayıt ol
+          </Link>
+        </div>
       </motion.div>
     </div>
   );

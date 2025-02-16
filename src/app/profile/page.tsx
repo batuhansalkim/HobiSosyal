@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GameController, Film, Tv, Music, Book, Star, Brush } from 'lucide-react';
+import { Gamepad2, Film, Tv, Music, Book, Star, Brush } from 'lucide-react';
 
 export default function ProfilePage() {
   return (
@@ -32,7 +32,7 @@ export default function ProfilePage() {
         <Tabs defaultValue="games" className="w-full">
           <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="games" className="flex items-center gap-2">
-              <GameController className="w-4 h-4" />
+              <Gamepad2 className="w-4 h-4" />
               Oyunlar
             </TabsTrigger>
             <TabsTrigger value="movies" className="flex items-center gap-2">
@@ -204,8 +204,49 @@ export default function ProfilePage() {
   );
 }
 
-// Kart bileşenleri
-function GameCard({ title, image, hours, platform }) {
+// Kart bileşenleri için interface tanımlamaları
+interface GameCardProps {
+  title: string;
+  image: string;
+  hours: string;
+  platform: string;
+}
+
+interface MediaCardProps {
+  title: string;
+  image: string;
+  rating: string;
+  year: string;
+}
+
+interface MusicCardProps {
+  title: string;
+  artist: string;
+  album: string;
+  genre: string;
+}
+
+interface SkillCardProps {
+  skill: string;
+  level: string;
+  experience: string;
+}
+
+interface HobbyCardProps {
+  hobby: string;
+  frequency: string;
+  experience: string;
+}
+
+interface BookCardProps {
+  title: string;
+  author: string;
+  genre: string;
+  rating: string;
+}
+
+// Kart bileşenlerini güncelleyelim
+function GameCard({ title, image, hours, platform }: GameCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -218,7 +259,7 @@ function GameCard({ title, image, hours, platform }) {
   );
 }
 
-function MediaCard({ title, image, rating, year }) {
+function MediaCard({ title, image, rating, year }: MediaCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -231,7 +272,7 @@ function MediaCard({ title, image, rating, year }) {
   );
 }
 
-function MusicCard({ title, artist, album, genre }) {
+function MusicCard({ title, artist, album, genre }: MusicCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -244,7 +285,7 @@ function MusicCard({ title, artist, album, genre }) {
   );
 }
 
-function SkillCard({ skill, level, experience }) {
+function SkillCard({ skill, level, experience }: SkillCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -256,7 +297,7 @@ function SkillCard({ skill, level, experience }) {
   );
 }
 
-function HobbyCard({ hobby, frequency, experience }) {
+function HobbyCard({ hobby, frequency, experience }: HobbyCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -268,7 +309,7 @@ function HobbyCard({ hobby, frequency, experience }) {
   );
 }
 
-function BookCard({ title, author, genre, rating }) {
+function BookCard({ title, author, genre, rating }: BookCardProps) {
   return (
     <Card>
       <CardContent className="p-4">

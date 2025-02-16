@@ -1,8 +1,19 @@
 'use client';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Plus, X } from 'lucide-react';
+
+// Kategori tipini tanımlayalım
+type Category = 'hobbies' | 'movies' | 'series' | 'games' | 'skills';
+
+// ProfileData interface'ini güncelleyelim
+interface ProfileData extends Record<Category, string[]> {
+  name: string;
+  bio: string;
+}
 
 export default function EditProfilePage() {
-  const [profileData, setProfileData] = useState({
+  const [profileData, setProfileData] = useState<ProfileData>({
     name: '',
     bio: '',
     hobbies: [],
@@ -13,19 +24,20 @@ export default function EditProfilePage() {
   });
 
   const [newItem, setNewItem] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('hobbies');
+  const [activeCategory, setActiveCategory] = useState<Category>('hobbies');
 
-  const addItem = (category: string) => {
+  const handleAddItem = (e: React.FormEvent) => {
+    e.preventDefault();
     if (newItem.trim()) {
       setProfileData(prev => ({
         ...prev,
-        [category]: [...prev[category], newItem.trim()]
+        [activeCategory]: [...prev[activeCategory], newItem.trim()]
       }));
       setNewItem('');
     }
   };
 
-  const removeItem = (category: string, index: number) => {
+  const handleRemoveItem = (category: Category, index: number) => {
     setProfileData(prev => ({
       ...prev,
       [category]: prev[category].filter((_, i) => i !== index)
@@ -33,94 +45,107 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">Profili Düzenle</h1>
-      
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">İsim</label>
-          <input
-            type="text"
-            value={profileData.name}
-            onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Biyografi</label>
-          <textarea
-            value={profileData.bio}
-            onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Yeni İçerik Ekle</label>
-          <div className="flex gap-2 mt-1">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="rounded-md border-gray-300 shadow-sm"
-            >
-              <option value="hobbies">Hobiler</option>
-              <option value="movies">Filmler</option>
-              <option value="series">Diziler</option>
-              <option value="games">Oyunlar</option>
-              <option value="skills">Yetenekler</option>
-            </select>
-            <input
-              type="text"
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              className="flex-1 rounded-md border-gray-300 shadow-sm"
-              placeholder="Yeni içerik ekle..."
-            />
-            <button
-              onClick={() => addItem(selectedCategory)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Ekle
-            </button>
-          </div>
-        </div>
-
-        {/* Kategori Listeleri */}
-        {Object.entries(profileData).map(([category, items]) => {
-          if (Array.isArray(items)) {
-            return (
-              <div key={category} className="mt-4">
-                <h3 className="font-medium capitalize">{category}</h3>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {items.map((item, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100"
-                    >
-                      {item}
-                      <button
-                        onClick={() => removeItem(category, index)}
-                        className="ml-2 text-red-500 hover:text-red-700"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          }
-          return null;
-        })}
-
-        <button
-          className="w-full mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-          onClick={() => console.log('Profil güncellendi:', profileData)}
+    <div className="min-h-screen bg-gray-900 py-12">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700"
         >
-          Profili Kaydet
-        </button>
+          <h1 className="text-3xl font-bold text-white mb-8">Profili Düzenle</h1>
+
+          {/* Temel Bilgiler */}
+          <div className="space-y-6 mb-8">
+            <div>
+              <label className="block text-gray-300 mb-2">İsim</label>
+              <input
+                type="text"
+                value={profileData.name}
+                onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
+                className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="İsminizi girin"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 mb-2">Biyografi</label>
+              <textarea
+                value={profileData.bio}
+                onChange={(e) => setProfileData(prev => ({ ...prev, bio: e.target.value }))}
+                className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Kendinizden bahsedin"
+                rows={4}
+              />
+            </div>
+          </div>
+
+          {/* Kategoriler */}
+          <div className="space-y-8">
+            <div className="flex space-x-4 overflow-x-auto pb-2">
+              {(['hobbies', 'movies', 'series', 'games', 'skills'] as const).map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`px-4 py-2 rounded-xl ${
+                    activeCategory === category
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Öğe Ekleme Formu */}
+            <form onSubmit={handleAddItem} className="flex space-x-4">
+              <input
+                type="text"
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                className="flex-1 bg-gray-700 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder={`Yeni ${activeCategory} ekle...`}
+              />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                className="bg-purple-600 text-white rounded-xl px-6 py-3 flex items-center space-x-2"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Ekle</span>
+              </motion.button>
+            </form>
+
+            {/* Öğe Listesi */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {profileData[activeCategory].map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-gray-700 rounded-xl p-4 flex justify-between items-center"
+                >
+                  <span className="text-white">{item}</span>
+                  <button
+                    onClick={() => handleRemoveItem(activeCategory, index)}
+                    className="text-gray-400 hover:text-red-400 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Kaydet Butonu */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="mt-8 w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl py-4 font-semibold"
+          >
+            Değişiklikleri Kaydet
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );
