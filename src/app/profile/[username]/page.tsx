@@ -202,48 +202,53 @@ export default function ProfilePage({ params }: { params: { username: string } }
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {profile[activeTab as keyof Profile]?.map((item, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 group border border-gray-700"
+                  <Link 
+                    href={`/${activeTab}/${encodeURIComponent(item)}`}
+                    className="block"
                   >
-                    <div className="p-6">
-                      {/* Kategori İkonları */}
-                      <div className="w-12 h-12 rounded-full bg-gray-700 mb-4 flex items-center justify-center">
-                        <div className="text-purple-400">
-                          {tabIcons[activeTab as keyof typeof tabIcons]}
+                    <motion.div
+                      key={index}
+                      whileHover={{ scale: 1.02 }}
+                      className="bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 group border border-gray-700"
+                    >
+                      <div className="p-6">
+                        {/* Kategori İkonları */}
+                        <div className="w-12 h-12 rounded-full bg-gray-700 mb-4 flex items-center justify-center">
+                          <div className="text-purple-400">
+                            {tabIcons[activeTab as keyof typeof tabIcons]}
+                          </div>
                         </div>
+
+                        {/* İsim ve Kategori */}
+                        <h3 className="text-lg font-semibold text-gray-200 group-hover:text-purple-400 transition-colors">
+                          {item}
+                        </h3>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {activeTab === 'movies' && '🎬 Film'}
+                          {activeTab === 'series' && '📺 Dizi'}
+                          {activeTab === 'games' && '🎮 Oyun'}
+                          {activeTab === 'hobbies' && '⭐ Hobi'}
+                          {activeTab === 'skills' && '💪 Yetenek'}
+                        </p>
                       </div>
 
-                      {/* İsim ve Kategori */}
-                      <h3 className="text-lg font-semibold text-gray-200 group-hover:text-purple-400 transition-colors">
-                        {item}
-                      </h3>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {activeTab === 'movies' && '🎬 Film'}
-                        {activeTab === 'series' && '📺 Dizi'}
-                        {activeTab === 'games' && '🎮 Oyun'}
-                        {activeTab === 'hobbies' && '⭐ Hobi'}
-                        {activeTab === 'skills' && '💪 Yetenek'}
-                      </p>
-                    </div>
-
-                    {/* Alt Bilgi */}
-                    <div className="px-6 py-4 bg-gray-900 border-t border-gray-700 flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        {new Date().toLocaleDateString()}
-                      </span>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-gray-400 hover:text-purple-400 transition-colors"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </motion.button>
-                    </div>
-                  </motion.div>
+                      {/* Alt Bilgi */}
+                      <div className="px-6 py-4 bg-gray-900 border-t border-gray-700 flex justify-between items-center">
+                        <span className="text-xs text-gray-500">
+                          {new Date().toLocaleDateString()}
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="text-gray-400 hover:text-purple-400 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </motion.div>
