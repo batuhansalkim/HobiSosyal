@@ -56,10 +56,12 @@ const imageUrls = {
   }
 };
 
+type TabType = 'hobbies' | 'movies' | 'series' | 'games' | 'skills';
+
 export default function ProfilePage({ params }: { params: { username: string } }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('hobbies');
+  const [activeTab, setActiveTab] = useState<TabType>('hobbies');
 
   useEffect(() => {
     // Mock veri - daha sonra Firebase'den gelecek
@@ -101,6 +103,23 @@ export default function ProfilePage({ params }: { params: { username: string } }
       </div>
     );
   }
+
+  const getTabContent = (profile: Profile, tab: TabType): string[] => {
+    switch(tab) {
+      case 'hobbies':
+        return profile.hobbies;
+      case 'movies':
+        return profile.movies;
+      case 'series':
+        return profile.series;
+      case 'games':
+        return profile.games;
+      case 'skills':
+        return profile.skills;
+      default:
+        return [];
+    }
+  };
 
   return (
     <motion.div 
@@ -178,11 +197,11 @@ export default function ProfilePage({ params }: { params: { username: string } }
                 {['hobbies', 'movies', 'series', 'games', 'skills'].map((tab) => (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => setActiveTab(tab as TabType)}
                     className={`
                       py-4 px-4 font-medium text-sm transition-all duration-200
                       flex items-center space-x-2 whitespace-nowrap
-                      ${activeTab === tab
+                      ${activeTab === tab as TabType
                         ? 'text-purple-400 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-purple-400'
                         : 'text-gray-400 hover:text-gray-300'}
                     `}
@@ -201,13 +220,13 @@ export default function ProfilePage({ params }: { params: { username: string } }
               className="p-8 bg-gray-900"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {profile[activeTab as keyof Profile]?.map((item, index) => (
+                {profile && getTabContent(profile, activeTab as TabType).map((item, index) => (
                   <Link 
+                    key={index}
                     href={`/${activeTab}/${encodeURIComponent(item)}`}
                     className="block"
                   >
                     <motion.div
-                      key={index}
                       whileHover={{ scale: 1.02 }}
                       className="bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 group border border-gray-700"
                     >
