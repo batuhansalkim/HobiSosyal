@@ -1,101 +1,133 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/10">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 pt-20 pb-16">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="text-center space-y-8"
+        >
+          <motion.div variants={itemVariants} className="space-y-4">
+            <h1 className="text-5xl md:text-7xl font-bold">
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Hobi Dünyasına
+              </span>
+              <br />
+              <span className="text-foreground">Hoş Geldiniz</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Tutkularınızı paylaşın, ilham verin ve yeni hobiler keşfedin.
+            </p>
+          </motion.div>
+
+          {/* Feature Cards */}
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
+            <motion.div 
+              whileHover={{ scale: 1.03, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group relative overflow-hidden rounded-xl bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 h-16 w-16 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300" />
+              <h3 className="text-2xl font-semibold mb-4 relative z-10">Hobilerini Paylaş</h3>
+              <p className="text-muted-foreground relative z-10">Tutkunuz olan hobileri diğer insanlarla paylaşın ve ilham kaynağı olun.</p>
+            </motion.div>
+            
+            <motion.div 
+              whileHover={{ scale: 1.03, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group relative overflow-hidden rounded-xl bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 h-16 w-16 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300" />
+              <h3 className="text-2xl font-semibold mb-4 relative z-10">Topluluk Oluştur</h3>
+              <p className="text-muted-foreground relative z-10">Benzer ilgi alanlarına sahip kişilerle tanışın ve etkinlikler düzenleyin.</p>
+            </motion.div>
+            
+            <motion.div 
+              whileHover={{ scale: 1.03, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="group relative overflow-hidden rounded-xl bg-card p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <div className="absolute top-0 right-0 -mt-4 -mr-4 h-16 w-16 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors duration-300" />
+              <h3 className="text-2xl font-semibold mb-4 relative z-10">Keşfet</h3>
+              <p className="text-muted-foreground relative z-10">Yeni hobiler keşfedin ve deneyimli kullanıcılardan ilham alın.</p>
+            </motion.div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div 
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-4 justify-center mt-12 items-center"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Button
+              size="lg"
+              onClick={() => router.push('/auth/login')}
+              className="text-lg px-8 py-6 rounded-full bg-primary hover:bg-primary/90 transition-colors duration-300"
+            >
+              Hemen Başla
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push('/auth/register')}
+              className="text-lg px-8 py-6 rounded-full border-2 hover:bg-primary/10 transition-colors duration-300"
+            >
+              Daha Fazla Bilgi
+            </Button>
+          </motion.div>
+
+          {/* Social Proof */}
+          <motion.div 
+            variants={itemVariants}
+            className="mt-20 pt-10 border-t border-border/50"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <p className="text-muted-foreground text-lg">Binlerce hobi tutkunu tarafından tercih ediliyor</p>
+            <div className="flex justify-center gap-8 mt-6">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">10K+</p>
+                <p className="text-sm text-muted-foreground">Aktif Kullanıcı</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">500+</p>
+                <p className="text-sm text-muted-foreground">Hobi Topluluğu</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-primary">50K+</p>
+                <p className="text-sm text-muted-foreground">Paylaşım</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
