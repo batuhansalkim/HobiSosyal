@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import Navbar from '@/components/shared/Navbar';
 
 // Tablar için icon tanımlamaları ekleyelim
 const tabIcons = {
@@ -153,6 +154,8 @@ export default function ProfilePage({ params }: { params: { username: string } }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/10">
+      <Navbar />
+      
       {/* Profil Başlığı */}
       <div className="bg-gradient-to-b from-primary/20 to-background border-b border-border/50">
         <div className="container max-w-4xl mx-auto px-4 py-8">
