@@ -3,9 +3,22 @@ import { useEffect, useState } from 'react';
 import { Profile } from '@/types/profile';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { motion } from 'framer-motion';
-import { MessageSquare, UserPlus, Share2 } from 'lucide-react';
+import { MessageSquare, UserPlus, Share2, Plus, Users } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 
 // Tablar için icon tanımlamaları ekleyelim
 const tabIcons = {
@@ -58,222 +71,292 @@ const imageUrls = {
 
 type TabType = 'hobbies' | 'movies' | 'series' | 'games' | 'skills';
 
+interface ProfileData {
+  bio: string;
+  hobbies: string[];
+  movies: string[];
+  series: string[];
+  games: string[];
+  skills: string[];
+}
+
 export default function ProfilePage({ params }: { params: { username: string } }) {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>('hobbies');
+  const [profileData, setProfileData] = useState<ProfileData>({
+    bio: '',
+    hobbies: [],
+    movies: [],
+    series: [],
+    games: [],
+    skills: [],
+  });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState<TabType>('hobbies');
+  const [newItem, setNewItem] = useState('');
+  const [editProfile, setEditProfile] = useState({
+    username: params.username,
+    bio: profileData.bio
+  });
 
   useEffect(() => {
-    // Mock veri - daha sonra Firebase'den gelecek
-    const mockProfile: Profile = {
-      id: '1',
-      username: params.username,
-      name: params.username === 'batu' ? 'Batuhan Yılmaz' : 'Enes Demir',
-      bio: "Hobi ve ilgi alanlarımı paylaşıyorum",
-      hobbies: ["Yazılım", "Oyun Geliştirme", "Müzik"],
-      movies: ["Inception", "The Matrix", "Interstellar"],
-      series: ["Breaking Bad", "Stranger Things", "The Witcher"],
-      games: ["The Witcher 3", "Red Dead Redemption 2", "Cyberpunk 2077"],
-      skills: ["JavaScript", "React", "Node.js", "Python"],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    setTimeout(() => {
-      setProfile(mockProfile);
-      setLoading(false);
-    }, 500);
+    // Profil verilerini localStorage'dan al
+    const savedProfile = localStorage.getItem(`profile_${params.username}`);
+    if (savedProfile) {
+      setProfileData(JSON.parse(savedProfile));
+    }
   }, [params.username]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800">Kullanıcı Bulunamadı</h1>
-          <p className="text-gray-600 mt-2">Aradığınız profil mevcut değil.</p>
-        </div>
-      </div>
-    );
-  }
-
-  const getTabContent = (profile: Profile, tab: TabType): string[] => {
-    switch(tab) {
-      case 'hobbies':
-        return profile.hobbies;
-      case 'movies':
-        return profile.movies;
-      case 'series':
-        return profile.series;
-      case 'games':
-        return profile.games;
-      case 'skills':
-        return profile.skills;
-      default:
-        return [];
+  const handleAddItem = () => {
+    if (newItem.trim()) {
+      const updatedProfileData = {
+        ...profileData,
+        [currentTab]: [...profileData[currentTab], newItem.trim()]
+      };
+      
+      setProfileData(updatedProfileData);
+      setNewItem('');
+      setIsAddModalOpen(false);
+      
+      // LocalStorage'ı güncelle
+      localStorage.setItem(`profile_${params.username}`, JSON.stringify(updatedProfileData));
     }
   };
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="min-h-screen bg-gray-900"
-    >
-      {/* Header - Gradient arka plan */}
-      <div className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 h-48" />
+  const handleEditProfile = () => {
+    setProfileData(prev => ({
+      ...prev,
+      bio: editProfile.bio
+    }));
+    setIsEditModalOpen(false);
+    // LocalStorage'ı güncelle
+    localStorage.setItem(`profile_${params.username}`, JSON.stringify({
+      ...profileData,
+      bio: editProfile.bio
+    }));
+  };
 
-      {/* Profile Content */}
-      <div className="container mx-auto px-4 -mt-32">
-        <motion.div 
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          className="bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-700"
-        >
-          {/* Profile Header */}
-          <div className="p-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6">
-                <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                    {profile.name.charAt(0)}
-                  </div>
-                  <div className="absolute bottom-2 right-2 h-4 w-4 bg-green-400 rounded-full border-2 border-gray-800"></div>
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white">{profile.name}</h1>
-                  <p className="text-gray-400">@{profile.username}</p>
-                  <p className="mt-2 text-gray-300 max-w-xl">{profile.bio}</p>
-                </div>
-              </div>
-              <div className="mt-6 md:mt-0 flex space-x-3">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-md hover:shadow-lg flex items-center space-x-2 transform hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  <UserPlus className="h-5 w-5" />
-                  <span>Takip Et</span>
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-6 py-3 bg-gray-700 text-gray-200 rounded-xl shadow-md hover:shadow-lg flex items-center space-x-2 transform hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  <MessageSquare className="h-5 w-5" />
-                  <span>Mesaj</span>
-                </motion.button>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="mt-8 grid grid-cols-3 gap-8 border-t border-gray-700 pt-8">
-              {[
-                { label: 'Takipçi', value: '2,345' },
-                { label: 'Takip', value: '1,234' },
-                { label: 'Gönderi', value: '234' },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-400 mt-1">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div className="border-t border-gray-700">
-            <div className="px-8">
-              <nav className="flex space-x-8 overflow-x-auto">
-                {['hobbies', 'movies', 'series', 'games', 'skills'].map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab as TabType)}
-                    className={`
-                      py-4 px-4 font-medium text-sm transition-all duration-200
-                      flex items-center space-x-2 whitespace-nowrap
-                      ${activeTab === tab as TabType
-                        ? 'text-purple-400 relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-purple-400'
-                        : 'text-gray-400 hover:text-gray-300'}
-                    `}
-                  >
-                    {tabIcons[tab as keyof typeof tabIcons]}
-                    <span>{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            {/* Tab Content */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-8 bg-gray-900"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {profile && getTabContent(profile, activeTab as TabType).map((item, index) => (
-                  <Link 
-                    key={index}
-                    href={`/${activeTab}/${encodeURIComponent(item)}`}
-                    className="block"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      className="bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 group border border-gray-700"
-                    >
-                      <div className="p-6">
-                        {/* Kategori İkonları */}
-                        <div className="w-12 h-12 rounded-full bg-gray-700 mb-4 flex items-center justify-center">
-                          <div className="text-purple-400">
-                            {tabIcons[activeTab as keyof typeof tabIcons]}
-                          </div>
-                        </div>
-
-                        {/* İsim ve Kategori */}
-                        <h3 className="text-lg font-semibold text-gray-200 group-hover:text-purple-400 transition-colors">
-                          {item}
-                        </h3>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {activeTab === 'movies' && '🎬 Film'}
-                          {activeTab === 'series' && '📺 Dizi'}
-                          {activeTab === 'games' && '🎮 Oyun'}
-                          {activeTab === 'hobbies' && '⭐ Hobi'}
-                          {activeTab === 'skills' && '💪 Yetenek'}
-                        </p>
-                      </div>
-
-                      {/* Alt Bilgi */}
-                      <div className="px-6 py-4 bg-gray-900 border-t border-gray-700 flex justify-between items-center">
-                        <span className="text-xs text-gray-500">
-                          {new Date().toLocaleDateString()}
-                        </span>
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="text-gray-400 hover:text-purple-400 transition-colors"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
+  const renderEmptyState = (title: string) => (
+    <div className="flex flex-col items-center justify-center p-8 text-center">
+      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+        <Plus className="w-8 h-8 text-primary" />
       </div>
-    </motion.div>
+      <h3 className="text-lg font-medium mb-2">{title} Ekle</h3>
+      <p className="text-sm text-muted-foreground mb-4">
+        Henüz hiç {title.toLowerCase()} eklenmemiş
+      </p>
+      <Button variant="outline" className="gap-2">
+        <Plus className="w-4 h-4" />
+        {title} Ekle
+      </Button>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/10">
+      {/* Profil Başlığı */}
+      <div className="bg-gradient-to-b from-primary/20 to-background border-b border-border/50">
+        <div className="container max-w-4xl mx-auto px-4 py-8">
+          <div className="flex items-center gap-6">
+            <div className="w-24 h-24 bg-primary/20 rounded-2xl flex items-center justify-center text-4xl font-bold text-primary">
+              {params.username.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold">{params.username}</h1>
+              <p className="text-muted-foreground mt-1">
+                {profileData.bio || 'Henüz bir biyografi eklenmemiş'}
+              </p>
+            </div>
+            <Button onClick={() => setIsEditModalOpen(true)} className="gap-2">
+              <Plus className="w-4 h-4" />
+              Düzenle
+            </Button>
+          </div>
+
+          <div className="flex gap-6 mt-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">2,345</div>
+              <div className="text-sm text-muted-foreground">Takipçi</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">1,234</div>
+              <div className="text-sm text-muted-foreground">Takip</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">234</div>
+              <div className="text-sm text-muted-foreground">Gönderi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* İçerik Sekmeler */}
+      <div className="container max-w-4xl mx-auto px-4 py-6">
+        <Tabs defaultValue="hobbies" className="space-y-4" onValueChange={(value) => setCurrentTab(value as TabType)}>
+          <TabsList className="grid grid-cols-5 gap-4 bg-transparent">
+            <TabsTrigger value="hobbies" className="data-[state=active]:bg-primary/20">
+              Hobiler
+            </TabsTrigger>
+            <TabsTrigger value="movies" className="data-[state=active]:bg-primary/20">
+              Filmler
+            </TabsTrigger>
+            <TabsTrigger value="series" className="data-[state=active]:bg-primary/20">
+              Diziler
+            </TabsTrigger>
+            <TabsTrigger value="games" className="data-[state=active]:bg-primary/20">
+              Oyunlar
+            </TabsTrigger>
+            <TabsTrigger value="skills" className="data-[state=active]:bg-primary/20">
+              Yetenekler
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="hobbies">
+            <div className="space-y-4">
+              {profileData.hobbies.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {profileData.hobbies.map((hobby, index) => (
+                    <Card key={index} className="p-4 flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <span>{hobby}</span>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              <div onClick={() => setIsAddModalOpen(true)} className="text-center">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Hobi Ekle
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="movies">
+            <div className="space-y-4">
+              {profileData.movies.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {profileData.movies.map((movie, index) => (
+                    <Card key={index} className="p-4">{movie}</Card>
+                  ))}
+                </div>
+              )}
+              <div onClick={() => setIsAddModalOpen(true)} className="text-center">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Film Ekle
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="series">
+            <div className="space-y-4">
+              {profileData.series.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {profileData.series.map((series, index) => (
+                    <Card key={index} className="p-4">{series}</Card>
+                  ))}
+                </div>
+              )}
+              <div onClick={() => setIsAddModalOpen(true)} className="text-center">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Dizi Ekle
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="games">
+            <div className="space-y-4">
+              {profileData.games.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {profileData.games.map((game, index) => (
+                    <Card key={index} className="p-4">{game}</Card>
+                  ))}
+                </div>
+              )}
+              <div onClick={() => setIsAddModalOpen(true)} className="text-center">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Oyun Ekle
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="skills">
+            <div className="space-y-4">
+              {profileData.skills.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {profileData.skills.map((skill, index) => (
+                    <Card key={index} className="p-4">{skill}</Card>
+                  ))}
+                </div>
+              )}
+              <div onClick={() => setIsAddModalOpen(true)} className="text-center">
+                <Button variant="outline" className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Yetenek Ekle
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* Edit Profile Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Profili Düzenle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Kullanıcı Adı</Label>
+              <Input
+                value={editProfile.username}
+                disabled
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Biyografi</Label>
+              <Textarea
+                value={editProfile.bio}
+                onChange={(e) => setEditProfile(prev => ({ ...prev, bio: e.target.value }))}
+                placeholder="Kendinizden bahsedin..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleEditProfile}>Kaydet</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Item Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{currentTab.charAt(0).toUpperCase() + currentTab.slice(1, -1)} Ekle</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>İsim</Label>
+              <Input
+                value={newItem}
+                onChange={(e) => setNewItem(e.target.value)}
+                placeholder={`Yeni ${currentTab.slice(0, -1)} adı`}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleAddItem}>Ekle</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
